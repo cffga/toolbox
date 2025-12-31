@@ -1,0 +1,42 @@
+#!/bin/bash
+# Nombre del archivo: mantenimiento
+# Tipo: Ejecutable de sistema (Toolbox)
+
+set -e
+
+echo "== Mantenimiento Mensual del Sistema $(date +'%Y-%m-%d') =="
+
+# 1. Update
+echo "--> [1/6] Actualizando sistema..."
+sudo apt update && sudo apt upgrade -y 
+
+# 2. Saneamiento
+echo "--> [2/6] Limpiando paquetería..."
+sudo apt --fix-broken install
+sudo apt autoremove --purge -y
+sudo apt clean
+if [ -n "$(dpkg -l | grep "^rc")" ]; then
+    dpkg -l | grep "^rc" | cut -d " " -f 3 | xargs -r sudo dpkg --purge
+fi
+
+# 3. Logs
+echo "--> [3/6] Purgando logs..."
+sudo journalctl --vacuum-time=2weeks --vacuum-size=100M
+sudo rm -rf /var/crash/*
+
+# 4. Snap
+if command -v snap >/dev/null; then
+    echo "--> [4/6] Optimizando Snap..."
+    sudo snap set system refresh.retain=2
+    sudo rm -f /var/lib/snapd/cache/*
+fi
+
+# 5. SSD
+echo "--> [5/6] TRIM..."
+sudo fstrim -av
+
+# 6. Cache Usuario
+echo "--> [6/6] Limpiando cachés..."
+rm -rf ~/.cache/thumbnails/*
+
+echo "== Listo. =="
