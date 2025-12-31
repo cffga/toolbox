@@ -42,7 +42,7 @@ En lugar de manejar scripts aislados con extensiones `.sh` o ubicaciones arbitra
 Se recomienda clonar la *toolbox* directamente en el directorio personal para mantener una estructura simple y predecible.
 
     cd ~
-    git clone https://github.com/TU_USUARIO/toolbox.git
+    git clone https://github.com/cffg/toolbox.git
 
 ### 2. Asignar permisos de ejecución
 
